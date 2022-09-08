@@ -1,0 +1,29 @@
+name: Update Process Team Board
+concurrency: process_team_option2
+on:
+  issues:
+  pull_request:
+  repository_dispatch:
+    types: [ project-board ]
+
+jobs:
+  automate-project-columns:
+    runs-on: [ self-hosted ]
+    env:
+      # GITHUB Token for Rest API
+      GITHUB_TOKEN: ${{ secrets.TEST_ACESS_TOKEN }}
+    steps:
+      - name: Github Context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install and Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Run Project Board Script
+        run: |
+          pip install click cattrs attrs requests
+          python scripts/update_board.py run
